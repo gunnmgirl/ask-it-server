@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 
 import authRoutes from "./routes/authRoutes";
+import questionRoutes from "./routes/questionRoutes";
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/question", questionRoutes);
 
 app.use((error, req, res, next) => {
   res.status(error.statusCode).send(error.message);
