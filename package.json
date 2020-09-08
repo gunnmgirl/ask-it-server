@@ -1,0 +1,32 @@
+{
+  "name": "ask-it-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --require dotenv/config -r esm src/index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gunnmgirl/ask-it-server.git"
+  },
+  "author": "Dzana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gunnmgirl/ask-it-server/issues"
+  },
+  "homepage": "https://github.com/gunnmgirl/ask-it-server#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.1",
+    "mongoose": "^5.10.3"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.4"
+  }
+}
