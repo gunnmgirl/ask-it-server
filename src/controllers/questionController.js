@@ -34,4 +34,17 @@ async function getHotQuestions(req, res, next) {
   }
 }
 
-export default { getLatestQuestions, getHotQuestions };
+async function getQuestion(req, res, next) {
+  const { questionId } = req.params;
+  try {
+    const question = await Question.findById(questionId);
+    return res.status(200).send(question);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+export default { getLatestQuestions, getHotQuestions, getQuestion };
