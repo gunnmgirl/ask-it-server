@@ -12,6 +12,7 @@ async function getMostPopular(req, res, next) {
           email: 1,
           password: 1,
           answers: 1,
+          questions: 1,
           length: {
             $cond: {
               if: { $isArray: "$answers" },

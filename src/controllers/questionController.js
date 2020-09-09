@@ -19,7 +19,6 @@ async function getLatestQuestions(req, res, next) {
 
 async function getHotQuestions(req, res, next) {
   const { page } = req.query;
-  console.log("u hot");
   try {
     const totalQuestions = await Question.find().countDocuments();
     const questions = await Question.find()

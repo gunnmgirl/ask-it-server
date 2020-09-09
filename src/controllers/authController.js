@@ -20,6 +20,8 @@ async function signup(req, res, next) {
       lastName: req.body.lastName,
       email: req.body.email,
       password: hashedPassword,
+      answers: [],
+      questions: [],
     });
     res.status(201).send();
   } catch (error) {

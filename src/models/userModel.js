@@ -26,6 +26,7 @@ const UserSchema = new Schema(
         ref: "Answer",
       },
     ],
+    questions: [{ type: Schema.Types.ObjectId, ref: "Question" }],
   },
   { timestamps: true }
 );
