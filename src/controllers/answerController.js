@@ -5,7 +5,12 @@ import Question from "../models/questionModel";
 async function postAnswer(req, res, next) {
   const { questionId } = req.body;
   try {
-    const answer = await Answer.create(req);
+    const answer = await Answer.create({
+      body: req.body.body,
+      upvotes: 0,
+      downvotes: 0,
+      createdBy: req.userId,
+    });
     const user = await User.findById(req.userId);
     const question = await Question.findById(questionId);
     question.answers.push(answer);

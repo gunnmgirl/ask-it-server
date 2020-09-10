@@ -1,4 +1,5 @@
 import Question from "../models/questionModel";
+import Answer from "../models/answerModel";
 
 async function getLatestQuestions(req, res, next) {
   const { page } = req.query;
@@ -34,11 +35,12 @@ async function getHotQuestions(req, res, next) {
   }
 }
 
-async function getQuestion(req, res, next) {
+async function getQuestionAndAnswers(req, res, next) {
   const { questionId } = req.params;
   try {
     const question = await Question.findById(questionId);
-    return res.status(200).send(question);
+    const answers = await Answer.find().where("_id").in(question.answers);
+    return res.status(200).send({ question, answers });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 500;
@@ -47,4 +49,4 @@ async function getQuestion(req, res, next) {
   }
 }
 
-export default { getLatestQuestions, getHotQuestions, getQuestion };
+export default { getLatestQuestions, getHotQuestions, getQuestionAndAnswers };

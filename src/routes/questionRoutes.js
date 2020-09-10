@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.get("/latest", questionController.getLatestQuestions);
 router.get("/hot", questionController.getHotQuestions);
-router.get("/:questionId", questionController.getQuestion);
+router.get("/:questionId", questionController.getQuestionAndAnswers);
 
 export default router;
