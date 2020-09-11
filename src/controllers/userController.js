@@ -68,20 +68,22 @@ async function editUser(req, res, next) {
 }
 
 async function changePassword(req, res, next) {
-  const { newPassword, confirmPassword } = req.body;
+  const { currentPassword, newPassword } = req.body;
   try {
-    if (newPassword !== confirmPassword) {
-      const error = new Error("Passwords do not match!");
+    const user = await User.findOne({ _id: req.userId });
+    const isEqual = await bcrypt.compare(currentPassword, user.password);
+    if (!isEqual) {
+      const error = new Error("Wrong password!");
       error.statusCode = 400;
       throw error;
     }
     const hashedPassword = await bcrypt.hash(newPassword, 12);
-    const user = await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       req.userId,
       { $set: { password: hashedPassword } },
       { new: true }
     );
-    return res.status(200).send(user);
+    return res.status(200).send(updatedUser);
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 500;
