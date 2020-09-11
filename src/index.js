@@ -27,6 +27,7 @@ app.use("/user", userRoutes);
 app.use("/answer", answerRoutes);
 
 app.use((error, req, res, next) => {
+  console.log("in error middleware ", error);
   res.status(error.statusCode).send(error.message);
 });
 
