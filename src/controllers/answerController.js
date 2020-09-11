@@ -11,12 +11,14 @@ async function postAnswer(req, res, next) {
       downvotes: 0,
       createdBy: req.userId,
     });
-    const user = await User.findById(req.userId);
-    const question = await Question.findById(questionId);
-    question.answers.push(answer);
-    await question.save();
-    user.answers.push(answer);
-    await user.save();
+    const question = await Question.findOneAndUpdate(
+      { _id: questionId },
+      { $push: { answers: answer } }
+    );
+    const user = await User.findOneAndUpdate(
+      { _id: req.userId },
+      { $push: { answers: answer } }
+    );
     res.status(200).send(answer);
   } catch (error) {
     if (!error.statusCode) {

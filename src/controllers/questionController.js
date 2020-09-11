@@ -1,5 +1,6 @@
 import Question from "../models/questionModel";
 import Answer from "../models/answerModel";
+import User from "../models/userModel";
 
 async function getLatestQuestions(req, res, next) {
   const { page } = req.query;
@@ -49,4 +50,30 @@ async function getQuestionAndAnswers(req, res, next) {
   }
 }
 
-export default { getLatestQuestions, getHotQuestions, getQuestionAndAnswers };
+async function postQuestion(req, res, next) {
+  const { values } = req.body;
+  try {
+    const question = await Question.create({
+      body: values.body,
+      upvotes: 0,
+      downvotes: 0,
+      createdBy: req.userId,
+    });
+    const user = await User.findById(req.userId);
+    user.questions.push(question);
+    await user.save();
+    res.status(200).send(question);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+export default {
+  getLatestQuestions,
+  getHotQuestions,
+  getQuestionAndAnswers,
+  postQuestion,
+};
