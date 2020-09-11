@@ -59,9 +59,10 @@ async function postQuestion(req, res, next) {
       downvotes: 0,
       createdBy: req.userId,
     });
-    const user = await User.findById(req.userId);
-    user.questions.push(question);
-    await user.save();
+    const user = await User.findOneAndUpdate(
+      { _id: req.userId },
+      { $push: { questions: question } }
+    );
     res.status(200).send(question);
   } catch (error) {
     if (!error.statusCode) {
