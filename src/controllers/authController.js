@@ -51,7 +51,7 @@ async function login(req, res, next) {
       process.env.SECRET,
       { expiresIn: "2h" }
     );
-    res.status(200).send({ token, user: user });
+    res.status(200).send({ token, userId: user._id });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 500;

@@ -1,3 +1,5 @@
+import bcrypt from "bcryptjs";
+
 import User from "../models/userModel";
 
 async function getMostPopular(req, res, next) {
@@ -35,4 +37,57 @@ async function getMostPopular(req, res, next) {
   }
 }
 
-export default { getMostPopular };
+async function getUser(req, res, next) {
+  const { userId } = req.query;
+  try {
+    const user = await User.findById(userId);
+    return res.status(200).send(user);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+async function editUser(req, res, next) {
+  const { firstName, lastName } = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: { firstName, lastName } },
+      { new: true }
+    );
+    return res.status(200).send(user);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+async function changePassword(req, res, next) {
+  const { newPassword, confirmPassword } = req.body;
+  try {
+    if (newPassword !== confirmPassword) {
+      const error = new Error("Passwords do not match!");
+      error.statusCode = 400;
+      throw error;
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: { password: hashedPassword } },
+      { new: true }
+    );
+    return res.status(200).send(user);
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+export default { getMostPopular, getUser, editUser, changePassword };
