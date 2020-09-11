@@ -32,12 +32,20 @@ async function deleteAnswer(req, res, next) {
   const { answerId, questionId } = req.query;
   try {
     await Answer.findByIdAndDelete(answerId);
-    const user = await User.findById(req.userId);
-    const question = await Question.findById(questionId);
-    question.answers.pull(answerId);
-    await question.save();
-    user.answers.pull(answerId);
-    await user.save();
+    const user = await User.findOneAndUpdate(
+      { _id: req.userId },
+      {
+        $pull: { answers: answerId },
+      },
+      { new: true }
+    );
+    const question = await Question.findOneAndUpdate(
+      { _id: questionId },
+      {
+        $pull: { answers: answerId },
+      },
+      { new: true }
+    );
     res.status(200).send(answerId);
   } catch (error) {
     if (!error.statusCode) {
@@ -60,4 +68,117 @@ async function editAnswer(req, res, next) {
   }
 }
 
-export default { postAnswer, deleteAnswer, editAnswer };
+async function upvoteAnswer(req, res, next) {
+  const { answerId } = req.body;
+  try {
+    const isDownvoted = await Answer.findOne({
+      _id: answerId,
+      "downvotes.users": req.userId,
+    });
+    if (isDownvoted) {
+      const answer = await Answer.findOneAndUpdate(
+        { _id: answerId },
+        {
+          $inc: { "downvotes.count": -1, "upvotes.count": 1 },
+          $pull: { "downvotes.users": req.userId },
+          $push: { "upvotes.users": req.userId },
+        },
+        { new: true }
+      );
+      return res.status(200).send({
+        upvotes: answer.upvotes.count,
+        downvotes: answer.downvotes.count,
+        answerId,
+      });
+    }
+    const isUpvoted = await Answer.findOne({
+      _id: answerId,
+      "upvotes.users": req.userId,
+    });
+    if (isUpvoted) {
+      return res.status(200).send({
+        upvotes: isUpvoted.upvotes.count,
+        downvotes: isUpvoted.downvotes.count,
+        answerId,
+      });
+    }
+    const answer = await Answer.findOneAndUpdate(
+      { _id: answerId },
+      { $inc: { "upvotes.count": 1 }, $push: { "upvotes.users": req.userId } },
+      { new: true }
+    );
+    return res.status(200).send({
+      upvotes: answer.upvotes.count,
+      downvotes: answer.downvotes.count,
+      answerId,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+async function downvoteAnswer(req, res, next) {
+  const { answerId } = req.body;
+  try {
+    const isUpvoted = await Answer.findOne({
+      _id: answerId,
+      "upvotes.users": req.userId,
+    });
+    if (isUpvoted) {
+      const answer = await Answer.findOneAndUpdate(
+        { _id: answerId },
+        {
+          $inc: { "upvotes.count": -1, "downvotes.count": 1 },
+          $pull: { "upvotes.users": req.userId },
+          $push: { "downvotes.users": req.userId },
+        },
+        { new: true }
+      );
+      return res.status(200).send({
+        upvotes: answer.upvotes.count,
+        downvotes: answer.downvotes.count,
+        answerId,
+      });
+    }
+    const isDownvoted = await Answer.findOne({
+      _id: answerId,
+      "downvotes.users": req.userId,
+    });
+    if (isDownvoted) {
+      return res.status(200).send({
+        upvotes: isDownvoted.upvotes.count,
+        downvotes: isDownvoted.downvotes.count,
+        answerId,
+      });
+    }
+    const answer = await Answer.findOneAndUpdate(
+      { _id: answerId },
+      {
+        $inc: { "downvotes.count": 1 },
+        $push: { "downvotes.users": req.userId },
+      },
+      { new: true }
+    );
+    return res.status(200).send({
+      upvotes: answer.upvotes.count,
+      downvotes: answer.downvotes.count,
+      answerId,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+export default {
+  postAnswer,
+  deleteAnswer,
+  editAnswer,
+  downvoteAnswer,
+  upvoteAnswer,
+};

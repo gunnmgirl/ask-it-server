@@ -9,12 +9,12 @@ const AnswerSchema = new Schema(
       required: true,
     },
     upvotes: {
-      type: Number,
-      required: true,
+      count: { type: Number, default: 0 },
+      users: [{ type: Schema.Types.ObjectId, ref: "User" }],
     },
     downvotes: {
-      type: Number,
-      required: true,
+      count: { type: Number, default: 0 },
+      users: [{ type: Schema.Types.ObjectId, ref: "User" }],
     },
     createdBy: {
       type: Schema.Types.ObjectId,
