@@ -50,6 +50,22 @@ async function getQuestionAndAnswers(req, res, next) {
   }
 }
 
+async function getMyQuestions(req, res, next) {
+  const { page } = req.query;
+  try {
+    const totalQuestions = await Question.find({ createdBy: req.userId });
+    const questions = await Question.find({ createdBy: req.userId })
+      .skip(Number(page) * 20)
+      .limit(20);
+    return res.status(200).send({ questions, totalQuestions });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
 async function postQuestion(req, res, next) {
   const { values } = req.body;
   try {
@@ -77,4 +93,5 @@ export default {
   getHotQuestions,
   getQuestionAndAnswers,
   postQuestion,
+  getMyQuestions,
 };
