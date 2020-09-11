@@ -10,5 +10,7 @@ router.get("/hot", isAuth, questionController.getHotQuestions);
 router.get("/myQuestions", isAuth, questionController.getMyQuestions);
 router.get("/:questionId", isAuth, questionController.getQuestionAndAnswers);
 router.post("/", isAuth, questionController.postQuestion);
+router.post("/upvote", isAuth, questionController.upvoteQuestion);
+router.post("/downvote", isAuth, questionController.downvoteQuestion);
 
 export default router;

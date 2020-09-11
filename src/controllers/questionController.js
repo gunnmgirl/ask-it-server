@@ -2,6 +2,113 @@ import Question from "../models/questionModel";
 import Answer from "../models/answerModel";
 import User from "../models/userModel";
 
+async function upvoteQuestion(req, res, next) {
+  const { questionId } = req.body;
+  try {
+    const isDownvoted = await Question.findOne({
+      _id: questionId,
+      "downvotes.users": req.userId,
+    });
+    if (isDownvoted) {
+      const question = await Question.findOneAndUpdate(
+        { _id: questionId },
+        {
+          $inc: { "downvotes.count": -1, "upvotes.count": 1 },
+          $pull: { "downvotes.users": req.userId },
+          $push: { "upvotes.users": req.userId },
+        },
+        { new: true }
+      );
+      return res.status(200).send({
+        upvotes: question.upvotes.count,
+        downvotes: question.downvotes.count,
+        questionId,
+      });
+    }
+    const isUpvoted = await Question.findOne({
+      _id: questionId,
+      "upvotes.users": req.userId,
+    });
+    if (isUpvoted) {
+      return res.status(200).send({
+        upvotes: isUpvoted.upvotes.count,
+        downvotes: isUpvoted.downvotes.count,
+        answerId,
+      });
+    }
+    const question = await Question.findOneAndUpdate(
+      { _id: questionId },
+      { $inc: { "upvotes.count": 1 }, $push: { "upvotes.users": req.userId } },
+      { new: true }
+    );
+    return res.status(200).send({
+      upvotes: question.upvotes.count,
+      downvotes: question.downvotes.count,
+      questionId,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
+async function downvoteQuestion(req, res, next) {
+  const { questionId } = req.body;
+  try {
+    const isUpvoted = await Question.findOne({
+      _id: questionId,
+      "upvotes.users": req.userId,
+    });
+    if (isUpvoted) {
+      const question = await Question.findOneAndUpdate(
+        { _id: questionId },
+        {
+          $inc: { "upvotes.count": -1, "downvotes.count": 1 },
+          $pull: { "upvotes.users": req.userId },
+          $push: { "downvotes.users": req.userId },
+        },
+        { new: true }
+      );
+      return res.status(200).send({
+        upvotes: question.upvotes.count,
+        downvotes: question.downvotes.count,
+        questionId,
+      });
+    }
+    const isDownvoted = await Question.findOne({
+      _id: questionId,
+      "downvotes.users": req.userId,
+    });
+    if (isDownvoted) {
+      return res.status(200).send({
+        upvotes: isDownvoted.upvotes.count,
+        downvotes: isDownvoted.downvotes.count,
+        questionId,
+      });
+    }
+    const question = await Question.findOneAndUpdate(
+      { _id: questionId },
+      {
+        $inc: { "downvotes.count": 1 },
+        $push: { "downvotes.users": req.userId },
+      },
+      { new: true }
+    );
+    return res.status(200).send({
+      upvotes: question.upvotes.count,
+      downvotes: question.downvotes.count,
+      questionId,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+}
+
 async function getLatestQuestions(req, res, next) {
   const { page } = req.query;
   try {
@@ -94,4 +201,6 @@ export default {
   getQuestionAndAnswers,
   postQuestion,
   getMyQuestions,
+  upvoteQuestion,
+  downvoteQuestion,
 };
