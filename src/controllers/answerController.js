@@ -19,6 +19,7 @@ async function postAnswer(req, res, next) {
       { _id: req.userId },
       { $push: { answers: answer } }
     );
+
     res.status(200).send(answer);
   } catch (error) {
     if (!error.statusCode) {

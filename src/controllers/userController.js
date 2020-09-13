@@ -4,6 +4,7 @@ import User from "../models/userModel";
 
 async function getMostPopular(req, res, next) {
   const { page } = req.query;
+  console.log(page);
   try {
     const totalUsers = await User.find().countDocuments();
     const users = await User.aggregate([
@@ -24,11 +25,10 @@ async function getMostPopular(req, res, next) {
           },
         },
       },
-      { $sort: { length: 1 } },
-      { $skip: Number(page) },
-      { $limit: 20 },
+      { $sort: { length: -1 } },
     ]);
-    return res.status(200).send({ users, totalUsers });
+    const updatedUsers = users.slice(Number(page) * 20, Number(page) * 20 + 20);
+    return res.status(200).send({ users: updatedUsers, totalUsers });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 500;
