@@ -8,6 +8,8 @@ import userRoutes from "./routes/userRoutes";
 import answerRoutes from "./routes/answerRoutes";
 
 const app = express();
+const port = process.env.PORT || 4000;
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(bodyParser.json());
@@ -33,8 +35,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.CONNECTION_STRING, { useUnifiedTopology: true })
   .then((result) => {
-    console.log("Connected to a server!");
-    app.listen(4000);
+    app.listen(port);
   })
   .catch((error) => {
     console.log(error);
