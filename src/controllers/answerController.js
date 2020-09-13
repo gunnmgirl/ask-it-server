@@ -97,9 +97,17 @@ async function upvoteAnswer(req, res, next) {
       "upvotes.users": req.userId,
     });
     if (isUpvoted) {
+      const answer = await Answer.findOneAndUpdate(
+        { _id: answerId },
+        {
+          $inc: { "upvotes.count": -1 },
+          $pull: { "upvotes.users": req.userId },
+        },
+        { new: true }
+      );
       return res.status(200).send({
-        upvotes: isUpvoted.upvotes.count,
-        downvotes: isUpvoted.downvotes.count,
+        upvotes: answer.upvotes.count,
+        downvotes: answer.downvotes.count,
         answerId,
       });
     }
@@ -149,9 +157,17 @@ async function downvoteAnswer(req, res, next) {
       "downvotes.users": req.userId,
     });
     if (isDownvoted) {
+      const answer = await Answer.findOneAndUpdate(
+        { _id: answerId },
+        {
+          $inc: { "downvotes.count": -1 },
+          $pull: { "downvotes.users": req.userId },
+        },
+        { new: true }
+      );
       return res.status(200).send({
-        upvotes: isDownvoted.upvotes.count,
-        downvotes: isDownvoted.downvotes.count,
+        upvotes: answer.upvotes.count,
+        downvotes: answer.downvotes.count,
         answerId,
       });
     }

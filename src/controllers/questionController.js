@@ -30,10 +30,18 @@ async function upvoteQuestion(req, res, next) {
       "upvotes.users": req.userId,
     });
     if (isUpvoted) {
+      const question = await Question.findOneAndUpdate(
+        { _id: questionId },
+        {
+          $inc: { "upvotes.count": -1 },
+          $pull: { "upvotes.users": req.userId },
+        },
+        { new: true }
+      );
       return res.status(200).send({
-        upvotes: isUpvoted.upvotes.count,
-        downvotes: isUpvoted.downvotes.count,
-        answerId,
+        upvotes: question.upvotes.count,
+        downvotes: question.downvotes.count,
+        questionId,
       });
     }
     const question = await Question.findOneAndUpdate(
@@ -82,6 +90,14 @@ async function downvoteQuestion(req, res, next) {
       "downvotes.users": req.userId,
     });
     if (isDownvoted) {
+      const question = await Question.findOneAndUpdate(
+        { _id: questionId },
+        {
+          $inc: { "downvotes.count": -1 },
+          $pull: { "downvotes.users": req.userId },
+        },
+        { new: true }
+      );
       return res.status(200).send({
         upvotes: isDownvoted.upvotes.count,
         downvotes: isDownvoted.downvotes.count,
