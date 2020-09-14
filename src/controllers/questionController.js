@@ -99,8 +99,8 @@ async function downvoteQuestion(req, res, next) {
         { new: true }
       );
       return res.status(200).send({
-        upvotes: isDownvoted.upvotes.count,
-        downvotes: isDownvoted.downvotes.count,
+        upvotes: question.upvotes.count,
+        downvotes: question.downvotes.count,
         questionId,
       });
     }

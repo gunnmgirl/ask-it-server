@@ -4,7 +4,6 @@ import User from "../models/userModel";
 
 async function getMostPopular(req, res, next) {
   const { page } = req.query;
-  console.log(page);
   try {
     const totalUsers = await User.find().countDocuments();
     const users = await User.aggregate([
