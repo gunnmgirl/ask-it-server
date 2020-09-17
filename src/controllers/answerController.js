@@ -87,9 +87,7 @@ async function upvoteAnswer(req, res, next) {
         { new: true }
       );
       return res.status(200).send({
-        upvotes: answer.upvotes.count,
-        downvotes: answer.downvotes.count,
-        answerId,
+        answer,
       });
     }
     const isUpvoted = await Answer.findOne({
@@ -106,9 +104,7 @@ async function upvoteAnswer(req, res, next) {
         { new: true }
       );
       return res.status(200).send({
-        upvotes: answer.upvotes.count,
-        downvotes: answer.downvotes.count,
-        answerId,
+        answer,
       });
     }
     const answer = await Answer.findOneAndUpdate(
@@ -117,9 +113,7 @@ async function upvoteAnswer(req, res, next) {
       { new: true }
     );
     return res.status(200).send({
-      upvotes: answer.upvotes.count,
-      downvotes: answer.downvotes.count,
-      answerId,
+      answer,
     });
   } catch (error) {
     if (!error.statusCode) {
@@ -147,9 +141,7 @@ async function downvoteAnswer(req, res, next) {
         { new: true }
       );
       return res.status(200).send({
-        upvotes: answer.upvotes.count,
-        downvotes: answer.downvotes.count,
-        answerId,
+        answer,
       });
     }
     const isDownvoted = await Answer.findOne({
@@ -166,9 +158,7 @@ async function downvoteAnswer(req, res, next) {
         { new: true }
       );
       return res.status(200).send({
-        upvotes: answer.upvotes.count,
-        downvotes: answer.downvotes.count,
-        answerId,
+        answer,
       });
     }
     const answer = await Answer.findOneAndUpdate(
@@ -180,9 +170,7 @@ async function downvoteAnswer(req, res, next) {
       { new: true }
     );
     return res.status(200).send({
-      upvotes: answer.upvotes.count,
-      downvotes: answer.downvotes.count,
-      answerId,
+      answer,
     });
   } catch (error) {
     if (!error.statusCode) {
